@@ -17,6 +17,7 @@
  class VSocket {
     public:
         void BuildSocket( char, bool = false );
+        void BuildSocket( int );
        ~VSocket();
  
        void Close();

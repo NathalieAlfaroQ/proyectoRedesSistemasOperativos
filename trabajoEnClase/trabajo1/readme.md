@@ -1,3 +1,12 @@
+make
+
+g++ -g -c ipv4-test.cc
+g++ -g -c Socket.cc
+g++ -g -c VSocket.cc
+g++ -g ipv4-test.o Socket.o VSocket.o -o ipv4-test.out
+
+alfanath@Alfa:~/proyectoRedesSistemasOperativos/trabajoEnClase/trabajo1$ ./ipv4-test.out 
+
 Objetivo
    Construir una jerarquía de clases "VSocket" y "Socket" en C++ para lograr el intercambio de mensajes entre
    computadoras que no comparten memoria 
