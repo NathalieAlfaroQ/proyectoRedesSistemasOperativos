@@ -14,7 +14,9 @@
     const char * osi = "10.84.166.62";
     const char * ose = "163.178.104.62";
     const char * whale = (char *) "GET /aArt/index.php?disk=Disk-01&fig=whale-1.txt\r\nHTTP/v1.1\r\nhost: redes.ecci\r\n\r\n";
- 
+    // https://os.ecci.ucr.ac.cr/aArt/index.php?disk=Disk-01&fig=rabbit.txt
+ // link del serve con figuras
+ // https://os.ecci.ucr.ac.cr/aArt/index.php?disk=Disk-01&cmd=ls
     VSocket * s;	
     char a[512];
  
