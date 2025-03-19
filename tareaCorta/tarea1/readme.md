@@ -1,5 +1,3 @@
-Read.Me
-
 Objetivo
    Completar las clase "VSocket" y "Socket" en C++ para lograr el intercambio de mensajes entre computadoras que no comparten memoria utilizando el protocolo TCP en IPv6
 
@@ -66,4 +64,3 @@ Descripción detallada:
 
 Referencias
    https://os.ecci.ucr.ac.cr/ci0123/Asignaciones/SocketsCourse.ppt
-

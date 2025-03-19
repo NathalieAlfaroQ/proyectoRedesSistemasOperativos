@@ -1,142 +1,123 @@
 /**
-  *  Universidad de Costa Rica
-  *  ECCI
-  *  CI0123 Proyecto integrador de redes y sistemas operativos
-  *  2025-i
-  *  Grupos: 1 y 3
-  *
-  *  ******   Socket class implementation
-  *
-  * (Fedora version)
-  *
+ * Interfaz para manejar sockets en sistemas Unix, permitiendo conexiones
+ * y transferencia de datos a través de la red.
+ * 
+ * Crear un socket en IPv4 o IPv6.
+ * Establecer conexión a un servidor usando IP o dominio.
+ * Leer datos desde el socket.
+ * Enviar datos al socket.
  **/
 
-#include <sys/socket.h>         // sockaddr_in
-#include <arpa/inet.h>          // ntohs
-#include <unistd.h>		// write, read
-#include <cstring>
-#include <stdexcept>
-#include <stdio.h>		// printf
+#include <sys/socket.h> // sockaddr_in para manejar y crear sockets.
+#include <arpa/inet.h>  // ntohs para conversiones de direcciones IP.
+#include <unistd.h>     // Para write y read.
+#include <cstring>      // Manejo de cadenas de caracteres.
+#include <stdexcept>    // Manejo de excepciones.
+#include <stdio.h>      // printf.
 
-#include "Socket.h"		// Derived class
+// Encabezado
+#include "Socket.h"
 
 /**
-  *  Class constructor
-  *     use Unix socket system call
-  *
-  *  @param     char t: socket type to define
-  *     's' for stream
-  *     'd' for datagram
-  *  @param     bool ipv6: if we need a IPv6 socket
-  *
+ *  Clase constructor usa Unix socket system call.
+ *
+ *  @param     char t: Tipo de socket.
+ *     's' para stream
+ *     'd' para datagram
+ *  @param     bool ipv6: Indica si usa IPv6 o no.
  **/
-Socket::Socket( char t, bool IPv6 ){
-
-   this->BuildSocket( t, IPv6 );      // Call base class constructor
-
+Socket::Socket(char t, bool IPv6)
+{
+   // Llama a la clase base.
+   this->BuildSocket(t, IPv6);
 }
 
+// Destructor.
+Socket::~Socket() {}
 
 /**
-  *  Class destructor
-  *
-  *  @param     int id: socket descriptor
-  *
+ * Para establecer una conexión al servidor.
+ * EstablishConnection() se encarga de la conexión.
+ *
+ * @param      char * host: Dirección de host en notación de puntos, ejemplo "10.1.166.62".
+ * @param      int port: Dirección del proceso, ejemplo 80.
  **/
-Socket::~Socket() {
-
+int Socket::MakeConnection(const char *hostip, int port)
+{
+   return this->EstablishConnection(hostip, port);
 }
 
-
 /**
-  * MakeConnection method
-  *   use "EstablishConnection" in base class
-  *
-  * @param      char * host: host address in dot notation, example "10.1.166.62"
-  * @param      int port: process address, example 80
-  *
+ * Para establecer una conexión al servidor.
+ * EstablishConnection() se encarga de la conexión.
+ *
+ * @param      char * host: Dirección de host en notación de puntos, ejemplo "os.ecci.ucr.ac.cr".
+ * @param      char * service: Dirección del proceso, ejemplo "http".
  **/
-int Socket::MakeConnection( const char * hostip, int port ) {
-
-   return this->EstablishConnection( hostip, port );
-
+int Socket::MakeConnection(const char *host, const char *service)
+{
+   return this->EstablishConnection(host, service);
 }
 
-
 /**
-  * MakeConnection method
-  *   use "EstablishConnection" in base class
-  *
-  * @param      char * host: host address in dns notation, example "os.ecci.ucr.ac.cr"
-  * @param      char * service: process address, example "http"
-  *
+ * Lee datos del socket y los almacena en buffer hasta un máximo de size bytes.
+ * Usa "read" Unix system call (man 3 read).
+ *
+ * @param      void * buffer: Almacena los datos leídos del socket.
+ * @param      int size: Capacidad del buffer, si se llena, se detiene.
  **/
-int Socket::MakeConnection( const char *host, const char *service ) {
+size_t Socket::Read(void *buffer, size_t size)
+{
+   // Retorna el número de bytes leídos.
+   int st = read(idSocket, buffer, size);
 
-   return this->EstablishConnection( host, service );
-
-}
-
-
-/**
-  * Read method
-  *   use "read" Unix system call (man 3 read)
-  *
-  * @param      void * buffer: buffer to store data read from socket
-  * @param      int size: buffer capacity, read will stop if buffer is full
-  *
- **/
-size_t Socket::Read( void * buffer, size_t size ) {
-
-   int st =read(idSocket, buffer, size);
-   if ( -1 == st ) {
-      throw std::runtime_error( "Socket::Read( void *, size_t )" );
+   // Si da error, lanza una excepción.
+   if (-1 == st)
+   {
+      throw std::runtime_error("Socket::Read( void *, size_t )");
    }
 
    return st;
-
 }
 
-
 /**
-  * Write method
-  *   use "write" Unix system call (man 3 write)
-  *
-  * @param      void * buffer: buffer to store data write to socket
-  * @param      size_t size: buffer capacity, number of bytes to write
-  *
+ * Escribe size bytes desde buffer en el socket.
+ * Usa "write" Unix system call (man 3 write).
+ *
+ * @param      void * buffer: Almacena los datos a escribir del socket.
+ * @param      size_t size: Capacidad del buffer, número de bytes a escribir.
  **/
-size_t Socket::Write( const void * buffer, size_t size ) {
-
+size_t Socket::Write(const void *buffer, size_t size)
+{
+   // Escribe.
    size_t st = write(idSocket, buffer, size);
 
-   if ( -1 == st ) {
-      throw std::runtime_error( "Socket::Write( void *, size_t )" );
+   // Si la escritura falla, lanza una excepción.
+   if (-1 == st)
+   {
+      throw std::runtime_error("Socket::Write( void *, size_t )");
    }
 
    return st;
-
 }
 
-
 /**
-  * Write method
-  *   use "write" Unix system call (man 3 write)
-  *
-  * @param      char * text: text to write to socket
-  *
+ * Calcula la longitud del texto.
+ * Usa "write" Unix system call (man 3 write).
+ *
+ * @param      char * text: Texto a escribir al socket.
  **/
-size_t Socket::Write( const char * text ) {
-
-  // Calls the Write function after finding the length of the string
-
+size_t Socket::Write(const char *text)
+{
+   // Llama a write y busca el largo de la cadena.
    // strlen(text) Calcula la longitud de la cadena.
    size_t bytes_written = Write(text, strlen(text));
 
-   if (bytes_written == -1) {
+   // Lanzar excepción si hay error.
+   if (bytes_written == -1)
+   {
       throw std::runtime_error("Writing error");
    }
+
    return bytes_written;
-
 }
-
