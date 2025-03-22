@@ -27,4 +27,3 @@ ipv4-udp-server.out: ipv4-udp-server.o VSocket.o Socket.o
 
 clean:
 	rm -f *.o *.out
-

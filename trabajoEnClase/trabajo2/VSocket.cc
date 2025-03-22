@@ -74,9 +74,11 @@ void VSocket::Close()
 {
    int connection;
    // Si el socket está abierto, cerrar.
+
    if (this->idSocket != -1)
    {
       connection = close(this->idSocket);
+
       if (connection == -1)
       {
          throw std::runtime_error("Socket::Close");
@@ -150,8 +152,8 @@ int VSocket::EstablishConnection(const char *host, const char *service)
 {
    int st;
    struct addrinfo hints, *result, *rp;
-
    memset(&hints, 0, sizeof(struct addrinfo));
+
    // Permite IPv4 o IPv6.
    hints.ai_family = AF_UNSPEC;
    // Socket tipo stream.
@@ -188,8 +190,10 @@ int VSocket::EstablishConnection(const char *host, const char *service)
 int VSocket::Bind(int port)
 {
    int st = -1;
+
    // Creates a connection based on whether it is an IPv6 or not
-   if(this->IPv6) {
+   if (this->IPv6)
+   {
       // Struct that holds the server information
       struct sockaddr_in6 server_address6;
       // Makes it IPv6
@@ -197,15 +201,16 @@ int VSocket::Bind(int port)
       server_address6.sin6_addr = in6addr_any;
       server_address6.sin6_port = htons(port);
       // Attempts to create connection
-      st = bind(idSocket, (struct sockaddr *) &server_address6, sizeof(server_address6));
+      st = bind(idSocket, (struct sockaddr *)&server_address6, sizeof(server_address6));
    }
-   else {
+   else
+   {
       // Same as the if above, except for IPv4
       struct sockaddr_in server_address;
       server_address.sin_family = AF_INET;
       server_address.sin_addr.s_addr = INADDR_ANY;
       server_address.sin_port = htons(port);
-      st = bind(idSocket, (struct sockaddr *) &server_address, sizeof(server_address));
+      st = bind(idSocket, (struct sockaddr *)&server_address, sizeof(server_address));
    }
    return st;
 }
@@ -223,9 +228,10 @@ int VSocket::Bind(int port)
 size_t VSocket::sendTo(const void *buffer, size_t size, void *addr)
 {
    int st = -1;
-   st = sendto(this->idSocket, buffer, size, 0, (sockaddr*)addr, sizeof(struct sockaddr_in));
+   st = sendto(this->idSocket, buffer, size, 0, (sockaddr *)addr, sizeof(struct sockaddr_in));
 
-   if (st == -1) {
+   if (st == -1)
+   {
       throw std::runtime_error("VSocket::sendTo");
    }
 
@@ -248,9 +254,10 @@ size_t VSocket::recvFrom(void *buffer, size_t size, void *addr)
 {
    int st = -1;
    socklen_t addr_len = sizeof(struct sockaddr_in);
+   st = recvfrom(this->idSocket, buffer, size, 0, (struct sockaddr *)addr, &addr_len);
 
-   st = recvfrom(this->idSocket, buffer, size, 0, (struct sockaddr*) addr, &addr_len);
-   if (st == -1) {
+   if (st == -1)
+   {
       throw std::runtime_error("VSocket::recvFrom");
    }
 

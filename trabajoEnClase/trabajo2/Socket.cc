@@ -1,82 +1,67 @@
 /**
-  *  Universidad de Costa Rica
-  *  ECCI
-  *  CI0123 Proyecto integrador de redes y sistemas operativos
-  *  2025-i
-  *  Grupos: 1 y 3
-  *
-  *  ******   Socket class implementation
-  *
-  * (Fedora version)
-  *
+ *
  **/
 
-#include <sys/socket.h>         // sockaddr_in
-#include <arpa/inet.h>          // ntohs
-#include <unistd.h>		// write, read
+#include <sys/socket.h> // sockaddr_in
+#include <arpa/inet.h>  // ntohs
+#include <unistd.h>     // write, read
 #include <cstring>
 #include <stdexcept>
-#include <stdio.h>		// printf
+#include <stdio.h> // printf
 
-#include "Socket.h"		// Derived class
-
-/**
-  *  Class constructor
-  *     use Unix socket system call
-  *
-  *  @param     char t: socket type to define
-  *     's' for stream
-  *     'd' for datagram
-  *  @param     bool ipv6: if we need a IPv6 socket
-  *
- **/
-Socket::Socket( char t, bool IPv6 ){
-
-   this->BuildSocket( t, IPv6 );      // Call base class constructor
-
-}
-
+#include "Socket.h"
 
 /**
-  *  Class destructor
-  *
-  *  @param     int id: socket descriptor
-  *
+ *  Class constructor
+ *     use Unix socket system call
+ *
+ *  @param     char t: socket type to define
+ *     's' for stream
+ *     'd' for datagram
+ *  @param     bool ipv6: if we need a IPv6 socket
+ *
  **/
-Socket::~Socket() {
+Socket::Socket(char t, bool IPv6)
+{
 
+   this->BuildSocket(t, IPv6); // Call base class constructor
 }
-
 
 /**
-  * MakeConnection method
-  *   use "EstablishConnection" in base class
-  *
-  * @param      char * host: host address in dot notation, example "10.1.166.62"
-  * @param      int port: process address, example 80
-  *
+ *  Class destructor
+ *
+ *  @param     int id: socket descriptor
+ *
  **/
-int Socket::MakeConnection( const char * hostip, int port ) {
-
-   return this->EstablishConnection( hostip, port );
-
+Socket::~Socket()
+{
 }
-
 
 /**
-  * MakeConnection method
-  *   use "EstablishConnection" in base class
-  *
-  * @param      char * host: host address in dns notation, example "os.ecci.ucr.ac.cr"
-  * @param      char * service: process address, example "http"
-  *
+ * MakeConnection method
+ *   use "EstablishConnection" in base class
+ *
+ * @param      char * host: host address in dot notation, example "10.1.166.62"
+ * @param      int port: process address, example 80
+ *
  **/
-int Socket::MakeConnection( const char *host, const char *service ) {
-
-   return this->EstablishConnection( host, service );
-
+int Socket::MakeConnection(const char *hostip, int port)
+{
+   return this->EstablishConnection(hostip, port);
 }
 
+/**
+ * MakeConnection method
+ *   use "EstablishConnection" in base class
+ *
+ * @param      char * host: host address in dns notation, example "os.ecci.ucr.ac.cr"
+ * @param      char * service: process address, example "http"
+ *
+ **/
+int Socket::MakeConnection(const char *host, const char *service)
+{
+   return this->EstablishConnection(host, service);
+}
 
 /**
  * Lee datos del socket y los almacena en buffer hasta un máximo de size bytes.
