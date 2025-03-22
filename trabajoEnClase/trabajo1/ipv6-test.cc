@@ -1,4 +1,3 @@
-
 /*
  *  Esta prueba solo funciona utilizando un equipo de la red interna de la ECCI, por lo que
  *  deberan realizarlo en la ECCI o  conectarse por la VPN para completarla
@@ -10,22 +9,21 @@
  */
 #include <stdio.h>
 #include <string.h>
+#include <iostream>
+
 #include "Socket.h"
-#include <iostream> //
 
-int main( int argc, char * argv[] ) {
-   const char * lab = "fe80::4161:e292:8c1d:e3c0%enp0s31f6";
-   const char * request = "GET / HTTP/1.1\r\nhost: redes.ecci\r\n\r\n";
+int main(int argc, char *argv[])
+{
+   const char *lab = "fe80::4161:e292:8c1d:e3c0%enp0s31f6";
+   const char *request = "GET / HTTP/1.1\r\nhost: redes.ecci\r\n\r\n";
 
-   Socket s( 's', true );
-   char a[512]; //900
+   Socket s('s', true);
+   char a[512]; 
+   memset(a, 0, 512); 
 
-   memset( a, 0, 512 ); //900
-   s.MakeConnection( lab, (char *) "http" );
-   std::cout << "Connection successful\n";
-
-   s.Write(  request );
-   s.Read( a, 512 ); //900
-   printf( "%s\n", a);
-
+   s.MakeConnection(lab, (char *)"http");
+   s.Write(request);
+   s.Read(a, 512); 
+   printf("%s\n", a);
 }
