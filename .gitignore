@@ -34,3 +34,6 @@ build/
 
 # Archivos de Rust compilados
 target/
+
+# Archivos innecesarios de PDF
+*:Zone.Identifier
