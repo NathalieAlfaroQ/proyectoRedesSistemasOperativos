@@ -1,0 +1,1 @@
+Para esta asignación dice solo "Trabajar" y "Preparar", a lo que comprendo no hay entregables y los profes me dijeron que estaba bien, pero ya esto lo había subido en tarea4 y trabajo4 :)
