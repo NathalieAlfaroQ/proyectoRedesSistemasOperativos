@@ -1,58 +1,70 @@
-/**
-  *  Universidad de Costa Rica
-  *  ECCI
-  *  CI0123 Proyecto integrador de redes y sistemas operativos
-  *  2025-i
-  *  Grupos: 1 y 3
-  *
-  *   Socket client/server example
-  *
-  * (Fedora version)
-  *
- **/
+/*
+ * Socket client/server
+ * Versión Fedora
+ *
+ * Este programa crea un servidor que escucha conexiones de clientes.
+ * Cuando un cliente se conecta, el servidor crea un proceso hijo para
+ * atender la conexión, recibe un mensaje y se lo devuelve.
+ */
 
+// Bibliotecas
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <string.h>	// memset
+#include <string.h> // memset
 #include <unistd.h>
 #include <iostream>
 
+using namespace std;
+
+// Encabezados
 #include "Socket.h"
 
 #define PORT 1234
 #define BUFSIZE 512
 
-int main( int argc, char ** argv ) {
-   VSocket * s1, * s2;
+int main(int argc, char **argv)
+{
+   VSocket *s1, *s2;
    int childpid;
-   char a[ BUFSIZE ];
+   char a[BUFSIZE];
 
-   s1 = new Socket( 's', false );		// Create a stream IPv4 socket
+   // Crea un socket de tipo stream (TCP) IPv4
+   s1 = new Socket('s', false);
+   // Asocia el socket al puerto especificado
+   s1->Bind(PORT);
+   // Marca el socket como pasivo, con una cola de espera de 5 conexiones
+   s1->MarkPassive(5);
 
-   s1->Bind( PORT );			// Port to access this mirror server
-   s1->MarkPassive( 5 );		// Set passive socket and backlog queue to 5 connections
+   for (;;)
+   {
+      // Espera y acepta una nueva conexión
+      s2 = s1->AcceptConnection();
+      // Crea un proceso hijo para atender la conexión
+      childpid = fork();
 
-   for( ; ; ) {
-      s2 = s1->AcceptConnection();	// Wait for a new connection, connection info is in s2 variable
-      childpid = fork();		// Create a child to serve the request
-      if ( childpid < 0 ) {
-         perror( "server: fork error" );
-      } else {
-         if (0 == childpid) {		// child code
-            s1->Close();			// Close original socket "s1" in child
-            memset( a, 0, BUFSIZE );
-            s2->Read( a, BUFSIZE );	// Read a string from client using new conection info
-            std::cout << "Server received: " << a << std::endl;
-
-            s2->Write( a );		// Write it back to client, this is the mirror function
-            exit( 0 );			// Exit, finish child work
+      if (childpid < 0)
+      {
+         perror("server: fork error");
+      }
+      else
+      {
+         // Código que ejecuta el proceso hijo
+         if (0 == childpid)
+         {
+            // El hijo cierra el socket original
+            s1->Close();
+            memset(a, 0, BUFSIZE);
+            // Lee datos enviados por el cliente
+            s2->Read(a, BUFSIZE);
+            cout << "Servidor recibe: " << a << endl;
+            // Envía los mismos datos de vuelta al cliente
+            s2->Write(a);
+            // Termina el proceso hijo
+            exit(0);
          }
       }
-
-      s2->Close();			// Close socket s2 in parent, then go wait for a new conection
-
+      // El padre cierra la conexión ya atendida
+      s2->Close();
    }
-
 }
-

@@ -1,5 +1,4 @@
 # Linux Makefile
-#
 
 CC  := gcc
 CXX := g++
@@ -27,4 +26,3 @@ ThreadMirrorServer.out:	ThreadMirrorServer.o VSocket.o Socket.o
 	
 clean:
 	rm -f *.o *.out
-
