@@ -1,167 +1,114 @@
-/**
-  *  Universidad de Costa Rica
-  *  ECCI
-  *  CI0123 Proyecto integrador de redes y sistemas operativos
-  *  2025-i
-  *  Grupos: 1 y 3
-  *
-  *  ******   Socket class implementation
-  *
-  * (Fedora version)
-  *
- **/
+/*
+ * Implementación de la clase Socket.
+ *
+ * Esta clase maneja operaciones de creación, conexión, lectura y escritura
+ * de sockets de manera más sencilla.
+ */
 
-#include <sys/socket.h>         // sockaddr_in
-#include <arpa/inet.h>          // ntohs
-#include <unistd.h>		// write, read
+// Bibliotecas
+#include <sys/socket.h> // sockaddr_in
+#include <arpa/inet.h>  // ntohs
+#include <unistd.h>     // write, read
 #include <cstring>
 #include <stdexcept>
-#include <stdio.h>		// printf
+#include <stdio.h> // printf
 
-#include "Socket.h"		// Derived class
+// Encabezados
+#include "Socket.h" // Derived class
 
 /**
-  *  Class constructor
-  *     use Unix socket system call
-  *
-  *  @param     char t: socket type to define
-  *     's' for stream
-  *     'd' for datagram
-  *  @param     bool ipv6: if we need a IPv6 socket
-  *
- **/
-Socket::Socket( char t, bool IPv6 ){
-
-   this->BuildSocket( t, IPv6 );      // Call base class constructor
-
+ * Constructor de la clase Socket.
+ * Crea un socket según el tipo ('s' para stream TCP, 'd' para datagrama UDP)
+ * y el protocolo (IPv4 o IPv6).
+ */
+Socket::Socket(char t, bool IPv6)
+{
+   // Llama la función de construcción de la clase base
+   this->BuildSocket(t, IPv6);
 }
 
-
 /**
-  *  Class destructor
-  *
-  *  @param     int id: socket descriptor
-  *
- **/
-Socket::~Socket() {
+ * Destructor de la clase Socket.
+ * Cierra el socket si está abierto.
+ */
+Socket::~Socket()
+{
    Close();
 }
 
-
 /**
-  * MakeConnection method
-  *   use "EstablishConnection" in base class
-  *
-  * @param      char * host: host address in dot notation, example "10.1.166.62"
-  * @param      int port: process address, example 80
-  *
- **/
-int Socket::MakeConnection( const char * hostip, int port ) {
-
-   return this->EstablishConnection( hostip, port );
-
+ * Método para hacer conexión a un servidor, usando IP y puerto.
+ */
+int Socket::MakeConnection(const char *hostip, int port)
+{
+   return this->EstablishConnection(hostip, port);
 }
 
-
 /**
-  * MakeConnection method
-  *   use "EstablishConnection" in base class
-  *
-  * @param      char * host: host address in dns notation, example "os.ecci.ucr.ac.cr"
-  * @param      char * service: process address, example "http"
-  *
- **/
-int Socket::MakeConnection( const char *host, const char *service ) {
-
-   return this->EstablishConnection( host, service );
-
+ * Método para hacer conexión a un servidor, usando nombre DNS y servicio.
+ */
+int Socket::MakeConnection(const char *host, const char *service)
+{
+   return this->EstablishConnection(host, service);
 }
 
-
 /**
-  * Read method
-  *   use "read" Unix system call (man 3 read)
-  *
-  * @param      void * buffer: buffer to store data read from socket
-  * @param      int size: buffer capacity, read will stop if buffer is full
-  *
- **/
-size_t Socket::Read( void * buffer, size_t size ) {
-
+ * Método para leer datos del socket.
+ */
+size_t Socket::Read(void *buffer, size_t size)
+{
    int st = -1;
-
    st = read(idSocket, buffer, size);
 
-   if ( -1 == st ) {
-      throw std::runtime_error( "Socket::Read( void *, size_t )" );
+   if (-1 == st)
+   {
+      throw std::runtime_error("Socket::Read( void *, size_t )");
    }
 
    return st;
-
 }
 
-
 /**
-  * Write method
-  *   use "write" Unix system call (man 3 write)
-  *
-  * @param      void * buffer: buffer to store data write to socket
-  * @param      size_t size: buffer capacity, number of bytes to write
-  *
- **/
-size_t Socket::Write( const void * buffer, size_t size ) {
-
+ * Método para escribir datos en el socket (especificando el tamaño).
+ */
+size_t Socket::Write(const void *buffer, size_t size)
+{
    int st = -1;
    st = write(idSocket, buffer, size);
-   if ( -1 == st ) {
-      throw std::runtime_error( "Socket::Write( void *, size_t )" );
+
+   if (-1 == st)
+   {
+      throw std::runtime_error("Socket::Write( void *, size_t )");
    }
 
    return st;
-
 }
 
-
 /**
-  * Write method
-  *   use "write" Unix system call (man 3 write)
-  *
-  * @param      char * text: text to write to socket
-  *
- **/
-size_t Socket::Write( const char * text ) {
-
+ * Método para escribir una cadena de texto en el socket.
+ */
+size_t Socket::Write(const char *text)
+{
    int st = -1;
    st = Write(text, strlen(text));
 
-   if ( -1 == st ) {
-      throw std::runtime_error( "Socket::Write( char * )" );
+   if (-1 == st)
+   {
+      throw std::runtime_error("Socket::Write( char * )");
    }
 
    return st;
-
 }
-
 
 /**
-  * AcceptiConnection method
-  *    use base class to accept connections
-  *
-  *  @returns   a new class instance
-  *
-  *  Waits for a new connection to service (TCP mode: stream)
-  *
- **/
-VSocket * Socket::AcceptConnection(){
+ * Método para aceptar una conexión entrante en modo servidor.
+ * Devuelve una nueva instancia de socket para comunicarse con el cliente.
+ */
+VSocket *Socket::AcceptConnection()
+{
    int id;
-   VSocket * peer;
-
+   VSocket *peer;
    id = this->WaitForConnection();
-
-   peer = new Socket( id );
-
+   peer = new Socket(id);
    return peer;
-
 }
-
-

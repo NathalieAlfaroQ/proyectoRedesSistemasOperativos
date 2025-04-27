@@ -1,18 +1,19 @@
-Objetivos
-   Completar la clase para intercambio de mensajes entre computadoras que no comparten memoria (TCP IPv4)
-   Agregar la funcionalidad del servidor
+## Objetivos
+- Completar la clase para intercambio de mensajes entre computadoras que no comparten memoria (TCP IPv4).
 
-Introducción
-   Vamos a construir un servidor que sea capaz de atender cada solicitud por medio de un proceso separado (fork)
-   Vamos a completar la funcionalidad con hilos también
+- Agregar la funcionalidad del servidor.
 
-Funcionamiento
 
-   En esta entrega, vamos a crear los métodos de una clase "Socket" para lograr que un proceso servidor pueda
-   atender solicitudes de los clientes.  Para que ambos procesos puedan "comunicarse" va a ser necesario
-   definir un protocolo que ambos entiendan.  Para este trabajo en clase, este protocolo será muy sencillo.
+## Introducción
+- Vamos a construir un servidor que sea capaz de atender cada solicitud por medio de un proceso separado (fork).
 
-   Paso de mensajes por medio de sistemas Linux, descripción lógica
+- Vamos a completar la funcionalidad con hilos también.
+
+
+## Funcionamiento
+- En esta entrega, vamos a crear los métodos de una clase "Socket" para lograr que un proceso servidor pueda atender solicitudes de los clientes. Para que ambos procesos puedan "comunicarse" va a ser necesario definir un protocolo que ambos entiendan. Para este trabajo en clase, este protocolo será muy sencillo.
+
+- Paso de mensajes por medio de sistemas Linux, descripción lógica:
 
       ________________                                ________________
      |                |                              |                |
@@ -31,51 +32,48 @@ Funcionamiento
      |________________|                              |________________|
 
 
+## Tareas
+- Completar las clases "VSocket" y "Socket" para poder intercambiar mensajes entre procesos que no comparten memoria.
 
-Tareas
+- Para este trabajo deben completar:
+   
+   Clase "VSocket":
 
-   - Completar las clases "VSocket" y "Socket" para poder intercambiar mensajes entre procesos que no comparten memoria.
-     Para este trabajo deben completar:
+      VSocket::CreateVSocket( int ), es el "constructor" de la clase VSocket, recibe el descriptor generado por el llamado al sistema "accept" y construye una nueva instancia.
 
-      - Clase "VSocket"
+      virtual VSocket * VSocket::AcceptConnection() = 0;
 
-        VSocket::CreateVSocket( int ), es el "constructor" de la clase VSocket, recibe el descriptor generado por
-           el llamado al sistema "accept" y construye una nueva instancia
+      int VSocket::MarkPassive( int ), marca el socket como pasivo, es decir que va a recibir conexiones por medio de
+      
+      AcceptConnection, el parámetro establece el tamaño de la cola (backlog), utiliza el llamado al sistema "listen".
 
-        virtual VSocket * VSocket::AcceptConnection() = 0;
+      int VSocket::Bind( int ), para relacionar este socket con el proceso (bind), el parámetro determina el # de puerto a utilizar. Para establecer que direcciones pueden conectarse a nuestro servidor hay que indicar ese rango en el parámetro "address" utilizando esta estructura para IPv4:
 
-        int VSocket::MarkPassive( int ), marca el socket como pasivo, es decir que va a recibir conexiones por medio de
-           AcceptConnection, el parámetro establece el tamaño de la cola (backlog), utiliza el llamado al sistema "listen"
+         ```
+         int st;
+         struct sockaddr_in server_addr;
+               
+         server_addr.sin_family = AF_INET;	// Definimos la familia para IPv4
+         server_addr.sin_addr.s_addr = htonl( INADDR_ANY );	// Establecemos cualquier dirección
+         server_addr.sin_port = htons( PORT );	// El puerto asociado al servicio
+               
+         len = sizeof( server_addr );
+         st = bind( id, (const sockaddr *) & server_addr, len );
+         ```
 
-        int VSocket::Bind( int ), para relacionar este socket con el proceso (bind), el parámetro determina el
-           # de puerto a utilizar.  Para establecer que direcciones pueden conectarse a nuestro servidor hay que
-           indicar ese rango en el parámetro "address" utilizando esta estructura para IPv4:
+      int VSocket::Shutdown( int ), cierra parcialmente el Socket de acuerdo con el parámetro especificado.
 
-               int st;
-               struct sockaddr_in server_addr;
-               ...
-               server_addr.sin_family = AF_INET;	// Definimos la familia para IPv4
-               server_addr.sin_addr.s_addr = htonl( INADDR_ANY );	// Establecemos cualquier dirección
-               server_addr.sin_port = htons( PORT );	// El puerto asociado al servicio
-               ...
-               len = sizeof( server_addr );
-               ...
-               st = bind( id, (const sockaddr *) & server_addr, len );
+   Clase "Socket":
+   
+      VSocket * AcceptConnection(), acepta una solicitud de conexión TCP y crea un nuevo "handle" para intercambiar información, para ello deben utilizar el llamado al sistema "accept" y hacer que devuelva una nueva instancia de la clase "Socket".
 
-        int VSocket::Shutdown( int ), cierra parcialmente el Socket de acuerdo con el parámetro especificado
+      Socket::Socket( int ), otro constructor que recibe un entero como parámetro para construir una instancia en un socket que ya fue creado (abierto), se utiliza en "AcceptConnection" para construir y devolver una instancia de la clase "Socket".
 
-      - Clase "Socket"
-        VSocket * AcceptConnection(), acepta una solicitud de conexión TCP y crea un nuevo "handle" para intercambiar
-           información, para ello deben utilizar el llamado al sistema "accept" y hacer que devuelva una nueva
-           instancia de la clase "Socket"
+- Los ejemplos provistos "ForkMirrorServer.cc" y "MirrorClient.cc" deben funcionar correctamente.
 
-        Socket::Socket( int ), otro constructor que recibe un entero como parámetro para construir una instancia
-           en un socket que ya fue creado (abierto), se utiliza en "AcceptConnection" para construir y devolver una
-           instancia de la clase "Socket"
+- También el servidor con hilos "ThreadMirrorServer.cc" debe funcionar correctamente con el cliente "MirrorClient.cc".
 
 
-   - Los ejemplos provistos "ForkMirrorServer.cc" y "MirrorClient.cc" deben funcionar correctamente
-   - También el servidor con hilos "ThreadMirrorServer.cc" debe funcionar correctamente con el cliente "MirrorClient.cc"
+## Referencias
 
-Referencias
    https://os.ecci.ucr.ac.cr/ci0123/Asignaciones/SocketsCourse.ppt

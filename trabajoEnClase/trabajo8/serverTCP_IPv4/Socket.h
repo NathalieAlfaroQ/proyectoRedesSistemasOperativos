@@ -1,36 +1,41 @@
-/**
-  *  Universidad de Costa Rica
-  *  ECCI
-  *  CI0123 Proyecto integrador de redes y sistemas operativos
-  *  2025-i
-  *  Grupos: 1 y 3
-  *
-  ****** Socket class interface
-  *
-  * (Fedora version)
-  *
- **/
+/*
+ * Definición de la interfaz de la clase Socket, versión Fedora.
+ */
 
+// Encabezados
 #ifndef Socket_h
 #define Socket_h
+
 #include "VSocket.h"
 
-class Socket : public VSocket {
+/**
+ * La clase Socket hereda de VSocket y proporciona métodos para
+ * crear, conectar, leer y escribir sockets de una manera más sencilla.
+ */
+class Socket : public VSocket
+{
+public:
+   // Constructor
+   Socket(char, bool = false);
+   // Destructor
+   ~Socket();
 
-   public:
-      Socket( char, bool = false );
-      ~Socket();
-      int MakeConnection( const char *, int );
-      int MakeConnection( const char *, const char * );
-      size_t Read( void *, size_t );
-      size_t Write( const void *, size_t );
-      size_t Write( const char * );
+   // Conexión usando IP
+   int MakeConnection(const char *, int);
+   // Conexión usando DNS
+   int MakeConnection(const char *, const char *);
 
-      VSocket * AcceptConnection();
+   // Leer datos
+   size_t Read(void *, size_t);
+   // Escribir datos
+   size_t Write(const void *, size_t);
+   // Escribir texto
+   size_t Write(const char *);
 
-   protected:
+   // Aceptar conexiones
+   VSocket *AcceptConnection();
 
+protected:
 };
 
 #endif
-

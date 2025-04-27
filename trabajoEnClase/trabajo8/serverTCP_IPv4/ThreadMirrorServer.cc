@@ -1,14 +1,6 @@
-/**
-  *  Universidad de Costa Rica
-  *  ECCI
-  *  CI0123 Proyecto integrador de redes y sistemas operativos
-  *  2025-i
-  *  Grupos: 1 y 3
-  *
-  *   Socket client/server example with threads
-  *
-  * (Fedora version)
-  *
+/*
+ *    plo de socket cliente/servidor usando hilos (threads)
+
  **/
  
 #include <iostream>
@@ -57,6 +49,4 @@ int main( int argc, char ** argv ) {
       client = s1->AcceptConnection();	 	// Wait for a client connection
       worker = new std::thread( task, client );
    }
-
 }
-
