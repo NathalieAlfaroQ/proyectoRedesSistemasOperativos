@@ -1,54 +1,65 @@
 /*
- *    plo de socket cliente/servidor usando hilos (threads)
+ * Ejemplo de socket cliente/servidor usando hilos (threads).
+ *
+ * Crea un servidor que escucha por conexiones de clientes
+ * en un puerto. Cada vez que un cliente se conecta, se crea
+ * un nuevo hilo que se encarga de hablar
+ * con ese cliente. El servidor recibe un mensaje y se lo devuelve.
+ */
 
- **/
- 
+// Bibliotecas
 #include <iostream>
 #include <thread>
 
+// Encabezados
 #include "Socket.h"
 
-#define PORT 1234
-#define BUFSIZE 512
+using namespace std;
 
+#define PORT 1234   // Puerto donde escuha el servidor
+#define BUFSIZE 512 // Tamaño del mensaje
 
 /**
- *   Task each new thread will run
- *      Read string from socket
- *      Write it back to client
- *
- **/
-void task( VSocket * client ) {
-   char a[ BUFSIZE ];
-
-   client->Read( a, BUFSIZE );	// Read a string from client, data will be limited by BUFSIZE bytes
-   std::cout << "Server received: " << a << std::endl;
-   client->Write( a );		// Write it back to client, this is the mirror function
-   client->Close();		// Close socket in parent
-
+ * Ejecuta cada hilo creado para atender a un cliente.
+ */
+void task(VSocket *client)
+{
+   // Para guardar el mensaje
+   char a[BUFSIZE];
+   // Leer el mensaje del cliente
+   client->Read(a, BUFSIZE);
+   // Muestra el mensaje del servidor
+   cout << "Servidor recibe: " << a << endl;
+   // Le enviamos el mismo mensaje al cliente
+   client->Write(a);
+   // Cierra la conexion con el cliente
+   client->Close();
 }
 
-
 /**
- *   Create server code
- *      Infinite for
- *         Wait for client conection
- *         Spawn a new thread to handle client request
- *
+ * Funcion principal del servidor.
  **/
-int main( int argc, char ** argv ) {
-   std::thread * worker;
-   VSocket * s1, * client;
+int main(int argc, char **argv)
+{
+   // Hilo que atiende al cliente
+   thread *worker;
+   // s1 es el socket del servidor, client es el socket del cliente
+   VSocket *s1, *client;
 
-   s1 = new Socket( 's', false );
+   // Crea el socket del servidor
+   s1 = new Socket('s', false);
+   // Se vincula al puerto
+   s1->Bind(PORT);
+   // Modo escucha con capacidad 5 en cola
+   s1->MarkPassive(5);
 
-   s1->Bind( PORT );		// Port to access this mirror server
-   s1->MarkPassive( 5 );	// Set socket passive and backlog queue to 5 connections
-
-   for( ; ; ) {
-      client = s1->AcceptConnection();	 	// Wait for a client connection
-      worker = new std::thread( task, client );
-      worker->detach();  // para que el hilo trabaje por su cuenta y el sistema lo limpie después
-
+   for (;;)
+   {
+      // Esperamos una conexión de cliente
+      client = s1->AcceptConnection();
+      // Creamos un nuevo hilo para atenderlo
+      worker = new thread(task, client);
+      // Para que el hilo trabaje por su cuenta y el sistema lo limpie después
+      worker->detach();
    }
 }

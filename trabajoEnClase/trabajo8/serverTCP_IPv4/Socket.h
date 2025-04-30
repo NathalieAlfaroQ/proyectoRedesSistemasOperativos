@@ -37,8 +37,6 @@ public:
    VSocket *AcceptConnection();
 
 protected:
-int idSocket;
-
+   int idSocket;
 };
-
-#endif
+#endif // Socket_h

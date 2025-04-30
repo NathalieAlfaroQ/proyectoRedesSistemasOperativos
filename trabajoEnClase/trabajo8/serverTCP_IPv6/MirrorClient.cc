@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 
    /*
     * En terminal, no de VSC, poner: ip addr
-    * Tomar la eth0 en inet
+    * Tomar la inet6: fe80::215:5dff:fef6:1eed
     *
     * alfanath@Alfa:~$ ip addr
     * 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000

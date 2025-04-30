@@ -62,7 +62,7 @@ size_t Socket::Read(void *buffer, size_t size)
 
    if (-1 == st)
    {
-      throw std::runtime_error("Socket::Read( void *, size_t )");
+      throw std::runtime_error("Socket::Read");
    }
 
    return st;
@@ -78,7 +78,7 @@ size_t Socket::Write(const void *buffer, size_t size)
 
    if (-1 == st)
    {
-      throw std::runtime_error("Socket::Write( void *, size_t )");
+      throw std::runtime_error("Socket::Write");
    }
 
    return st;
@@ -94,7 +94,7 @@ size_t Socket::Write(const char *text)
 
    if (-1 == st)
    {
-      throw std::runtime_error("Socket::Write( char * )");
+      throw std::runtime_error("Socket::Write-text");
    }
 
    return st;
