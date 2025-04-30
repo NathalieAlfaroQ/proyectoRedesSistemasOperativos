@@ -40,7 +40,7 @@ int main( int argc, char ** argv ) {
    std::thread * worker;
    VSocket * s1, * client;
 
-   s1 = new Socket( 's', true );
+   s1 = new Socket( 's', false );
 
    s1->Bind( PORT );		// Port to access this mirror server
    s1->MarkPassive( 5 );	// Set socket passive and backlog queue to 5 connections
@@ -48,5 +48,7 @@ int main( int argc, char ** argv ) {
    for( ; ; ) {
       client = s1->AcceptConnection();	 	// Wait for a client connection
       worker = new std::thread( task, client );
+      worker->detach();  // para que el hilo trabaje por su cuenta y el sistema lo limpie después
+
    }
 }

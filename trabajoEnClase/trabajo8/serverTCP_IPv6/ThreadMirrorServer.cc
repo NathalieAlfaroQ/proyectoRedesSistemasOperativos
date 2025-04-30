@@ -48,5 +48,7 @@ int main( int argc, char ** argv ) {
    for( ; ; ) {
       client = s1->AcceptConnection();	 	// Wait for a client connection
       worker = new std::thread( task, client );
+      worker->detach();  // para que el hilo trabaje por su cuenta y el sistema lo limpie después
+
    }
 }
