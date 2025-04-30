@@ -17,6 +17,7 @@ class Socket : public VSocket
 public:
    // Constructor
    Socket(char, bool = false);
+   Socket(int id) : idSocket(id) {}
    // Destructor
    ~Socket();
 
@@ -36,6 +37,8 @@ public:
    VSocket *AcceptConnection();
 
 protected:
+int idSocket;
+
 };
 
 #endif

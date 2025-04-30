@@ -58,6 +58,8 @@ int main(int argc, char **argv)
             // Lee datos enviados por el cliente
             s2->Read(a, BUFSIZE);
             cout << "Servidor recibe: " << a << endl;
+            // Fuerza la impresion
+            cout.flush();
             // Envía los mismos datos de vuelta al cliente
             s2->Write(a);
             // Termina el proceso hijo
