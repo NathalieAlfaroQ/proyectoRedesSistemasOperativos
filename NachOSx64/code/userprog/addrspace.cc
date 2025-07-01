@@ -84,9 +84,17 @@ AddrSpace::AddrSpace(OpenFile *executable)
 					numPages, size);
 // first, set up the translation 
     pageTable = new TranslationEntry[numPages];
+
     for (i = 0; i < numPages; i++) {
-	pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
-	pageTable[i].physicalPage = i;
+    
+    bitmapLock->Acquire(); // Adquirir el lock para el mapa de bits
+    int freePage = MiMapa->Find(); // Encuentra página física libre
+    bitmapLock->Release(); // Liberar el lock para el mapa de bits
+    
+    ASSERT(freePage != -1); // Si no hay memoria suficiente, abortar
+	
+    pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
+	pageTable[i].physicalPage = freePage; // Asignar página física
 	pageTable[i].valid = true;
 	pageTable[i].use = false;
 	pageTable[i].dirty = false;
@@ -113,6 +121,34 @@ AddrSpace::AddrSpace(OpenFile *executable)
 			noffH.initData.size, noffH.initData.inFileAddr);
     }
 
+}
+
+// Nuevo constructor para crear un espacio de direcciones al hijo
+AddrSpace::AddrSpace(AddrSpace *parent) {
+    this->numPages = parent->numPages;  // Copiar el número de páginas del padre
+    this->pageTable = new TranslationEntry[numPages];  // Crear la tabla de páginas
+
+    // Inicializar la tabla de páginas
+    for (unsigned int i = 0; i < numPages; i++) {
+        bitmapLock->Acquire();  // adquirir el lock para la memoria
+        int frame = MiMapa->Find();  // encontrar un marco de página libre
+        bitmapLock->Release(); // liberar el lock para la memoria
+
+        ASSERT(frame != -1);
+        pageTable[i].virtualPage = i;
+        pageTable[i].physicalPage = frame;
+        // asignar la página física
+        pageTable[i].valid = true;
+        pageTable[i].use = false;
+        pageTable[i].dirty = false;
+        pageTable[i].readOnly = false;
+
+        // copiar el contenido de la página del padre al hijo
+        int parentFrame = parent->pageTable[i].physicalPage;
+        bcopy(&machine->mainMemory[parentFrame * PageSize],
+              &machine->mainMemory[frame * PageSize],
+              PageSize);
+    }
 }
 
 //----------------------------------------------------------------------

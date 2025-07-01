@@ -23,6 +23,9 @@ class AddrSpace {
     AddrSpace(OpenFile *executable);	// Create an address space,
 					// initializing it with the program
 					// stored in the file "executable"
+    AddrSpace(AddrSpace *parent); // Create an address space
+          // as a child of the parent address space
+          // (used for fork)
     ~AddrSpace();			// De-allocate an address space
 
     void InitRegisters();		// Initialize user-level CPU registers,

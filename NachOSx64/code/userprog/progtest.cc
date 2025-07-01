@@ -13,6 +13,9 @@
 #include "console.h"
 #include "addrspace.h"
 #include "synch.h"
+#include "nachostabla.h"
+
+NachosOpenFilesTable *OpenFileTable = nullptr; // Open file table for the process
 
 //----------------------------------------------------------------------
 // StartProcess
@@ -37,6 +40,8 @@ StartProcess(const char *filename)
 
     space->InitRegisters();		// set the initial register values
     space->RestoreState();		// load page table register
+
+    OpenFileTable = new NachosOpenFilesTable(); // Initialize the open file table
 
     machine->Run();			// jump to the user progam
     ASSERT(false);			// machine->Run never returns;

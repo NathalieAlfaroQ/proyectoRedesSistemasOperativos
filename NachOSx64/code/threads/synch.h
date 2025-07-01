@@ -142,6 +142,8 @@ class Condition {
     char* name;
     // plus some other stuff you'll need to define
     List<Thread*>* queue; // List to hold waiting threads
+        Lock* lock;
+
 };
 
 
@@ -156,6 +158,8 @@ class Mutex {
    private:
       char * name;
       // plus some other stuff you'll need to define
+       Semaphore * sem_lock;
+      Thread* lockOwner;
 };
 
 
@@ -169,6 +173,10 @@ class Barrier {
    private:
       char * name;
       // plus some other stuff you'll need to define
+      Semaphore* sem_lock;
+      Thread* lockOwner;
+      int barrierCount;
+      int barrierCountCurrent;
 };
 
 #endif // SYNCH_H
