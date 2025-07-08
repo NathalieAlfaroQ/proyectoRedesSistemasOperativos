@@ -1,0 +1,30 @@
+enable
+conf t
+vlan 140
+exit
+interface vlan 140
+ip address 172.16.123.65 255.255.255.240
+no shutdown
+exit
+
+interface fastEthernet0/4
+switchport mode access
+switchport access vlan 140
+switchport mode trunk
+switchport trunk allowed vlan 140
+exit
+
+ip dhcp pool isla4
+network 172.16.123.64 255.255.255.240
+default-router 172.16.123.65
+exit
+
+# Se utiliza fastEthernet0/4 porque el switch L3 tiene solo 2
+# puertos GigabitEthernet
+# Comando para GigabitEthernet0/4
+# interface GigaEthernet0/4
+# switchport mode access
+# switchport access vlan 140
+# switchport mode trunk
+# switchport trunk allowed vlan 140
+# exit
